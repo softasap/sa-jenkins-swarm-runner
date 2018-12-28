@@ -1,5 +1,5 @@
   - name: Jenkins Swarm Client | Create user
-    user: name="{{agent_user}}" shell=/bin/bash system=yes home="{{agent_install_dir}}" groups=docker append=yes
+    user: name="{{agent_user}}" shell=/bin/bash system=yes home="{{agent_install_dir}}" groups="{{agent_groups | default(omit)}}" append=yes
     become: yes
     tags: slave
 
