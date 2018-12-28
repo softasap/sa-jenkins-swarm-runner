@@ -8,6 +8,7 @@ agent_version: "3.15"
 agent_extra_params: "-disableClientsUniqueId -mode exclusive"
 cd_address: https://cd.your.address
 cd_slave_executors: 1
+cd_env: swarm
 
 agent_user: jenkins
 agent_install_dir: /opt/jenkins
@@ -35,4 +36,3 @@ java_alias: "java-{{ java_version }}-oracle"
 
 known_hashes:
   "jdk-7u80-linux-x64.tar.gz": "sha256:bad9a731639655118740bee119139c1ed019737ec802a630dd7ad7aab4309623"
-
