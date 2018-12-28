@@ -59,5 +59,6 @@
 
   - name: Jenkins Swarm Client | Restart Swarm client
     service: name=swarm-client state=restarted enabled=yes
+    when: docker_test is not defined
     become: yes
     tags: slave
