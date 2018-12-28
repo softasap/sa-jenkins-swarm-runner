@@ -1,0 +1,14 @@
+[Unit]
+Description=Jenkins swarm client
+
+[Service]
+Type=simple
+User={{ agent_user }}
+ExecStart=/usr/bin/java -jar {{agent_install_dir}}/swarm-client-{{agent_version}}.jar -master "{{cd_address}}" -executors {{cd_slave_executors}} -fsroot {{agent_install_dir}} -username "{{cd_user}}" -password "{{cd_pwd}}" -labels {{cd_env | default('unknownenv')}} -name $HOSTNAME {{agent_extra_params}}
+Environment=HOSTNAME={{ ansible_nodename }}
+Environment=HOME={{agent_install_dir}}
+Environment=JAVA_OPTS="-Xmx2048M -Dfile.encoding=utf8"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

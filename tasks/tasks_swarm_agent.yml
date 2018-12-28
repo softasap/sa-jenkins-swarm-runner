@@ -1,0 +1,47 @@
+  - name: Jenkins Swarm Client | Create user
+    user: name="{{agent_user}}" shell=/bin/bash system=yes home="{{agent_install_dir}}" groups=docker append=yes
+    become: yes
+    tags: slave
+
+  - name: Jenkins Swarm Client | Create agent directory
+    file: path="{{agent_install_dir}}" owner="{{agent_user}}" state="directory"
+    become: yes
+    tags: slave
+
+  - name: Jenkins Swarm Client | Create directory
+    file: path="{{agent_install_dir}}" state=directory owner="{{agent_user}}" group=root
+    become: yes
+    tags: slave
+
+  - name: Jenkins Swarm Client | Download Swarm client
+    get_url: url="https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/{{agent_version}}/swarm-client-{{agent_version}}.jar" dest={{agent_install_dir}}/swarm-client-{{agent_version}}.jar mode=644 owner="root" group="root"
+    become: yes
+    tags: slave
+
+  - name: Jenkins Swarm Client | Install upstart script for Swarm client
+    template: src={{root_dir}}/templates/swarm-client.conf.j2 dest=/etc/init/swarm.conf owner=root group=root mode=644
+    become: yes
+    when: ansible_service_mgr == "upstart"
+    tags: slave
+
+  - name: Jenkins Swarm Client | Install systemd service script for Swarm client
+    template:
+      src: '{{root_dir}}/templates/swarm-client.service.j2'
+      dest: '/etc/systemd/system/swarm-client.service'
+      owner: root
+      group: root
+      mode: '0644'
+    become: yes
+    when: ansible_service_mgr == "systemd"
+    tags: slave
+
+  - name: Jenkins Swarm Client | Reload systemd service
+    command: "/bin/systemctl daemon-reload"
+    become: yes
+    when: ansible_service_mgr == "systemd"
+    tags: slave
+
+  - name: Jenkins Swarm Client | Restart Swarm client
+    service: name=swarm-client state=restarted enabled=yes
+    become: yes
+    tags: slave

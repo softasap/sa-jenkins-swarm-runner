@@ -1,0 +1,16 @@
+description "Jenkins swarm client"
+author "JenkinsPlugin"
+
+start on runlevel [2345]
+stop on runlevel [016]
+
+setuid {{agent_user}}
+setgid nogroup
+
+console log
+
+env HOSTNAME="{{ ansible_nodename }}"
+env HOME="{{agent_install_dir}}"
+env JAVA_OPTS="-Xmx2048M -Dfile.encoding=utf8"
+
+exec start-stop-daemon --chdir ${HOME} --start --pid=/var/run/swarm-client.pid --exec /usr/bin/java -- -jar swarm-client-{{agent_version}}.jar -master "{{cd_address}}" -executors {{cd_slave_executors}} -fsroot {{agent_install_dir}} -username "{{cd_user}}" -password "{{cd_pwd}}" -labels {{cd_env | default('unknownenv')}} -name $HOSTNAME {{agent_extra_params}}
